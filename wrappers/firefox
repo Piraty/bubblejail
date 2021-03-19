@@ -1,0 +1,14 @@
+#!/bin/sh -x
+
+mkdir -p "$HOME/Downloads/firefox"
+
+exec bubblejail \
+	--need-x \
+	--need-dev \
+	--need-proc \
+	--need-netns \
+	--need-env-vars "HOME" \
+	"--bind $HOME/Downloads/firefox $HOME/Downloads" \
+	"--bind $HOME/.mozilla/firefox/ $HOME/.mozilla/firefox/" \
+	$BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS \
+	${BUBBLEJAIL_WRAPPER_FIREFOX_CMD:-firefox} "$@"

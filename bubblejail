@@ -1,0 +1,157 @@
+#!/bin/bash
+
+usage() {
+	app="$(basename "$0")"
+	cat <<USAGE
+$app [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
+
+DESCRIPTION
+  $app executes commands in linux containers by using the bubblewrap container
+  setup utility (see: https://github.com/containers/bubblewrap/).
+
+  $app provides a convenient interface to the rather basic and simple bwrap, to
+  provide a way to ease common tasks like mounting relevant mountpoints for
+  graphical applications.  It uses an opt-in design and works by starting with
+  a minimal bubblewrap config that needs to be extended on-demand and on
+  per-application use case, rather than the opposite way around (see firejail).
+
+  $app comes with a set of predefined wrappers for a few commonly used
+  applications.
+
+OPTIONS
+  --help               Show this help
+  --debug              Show bwrap command line
+
+  --network            Add network features (nss,dns,netns)
+
+  --need-dev           Mount new devtmpfs
+  --need-dns           Share resolvers with container
+  --need-netns         Retain the network namespace
+  --need-nss
+  --need-proc          Mount procfs
+  --need-x             Make X work
+  --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+
+ENV
+  $app respects the following environment variables
+
+  BUBBLEJAIL_ENV_WHITELIST    white-space separated list of variable names which
+                              are passed to the container
+USAGE
+}
+
+if [ "$#" = "0" ]; then
+	usage
+	exit 1
+fi
+
+_debug=
+_network=
+
+_need_dev=
+_need_dns=
+_need_netns=
+_need_nss=
+_need_proc=
+_need_x=
+_need_env_vars=
+
+while [ "$#" -gt 1 ]; do
+	arg="$1"
+	if [ -n "$_debug" ]; then
+		echo "DEBUG ARG: $arg"
+	fi
+	case "$arg" in
+		--help | -h)
+			usage
+			exit 0
+			;;
+		--debug) _debug=y ;;
+		--network) _network=y ;;
+		--need-dev) _need_dev=y ;;
+		--need-dns) _need_dns=y ;;
+		--need-proc) _need_proc=y ;;
+		--need-netns) _need_netns=y ;;
+		--need-nss) _need_nss=y ;;
+		--need-x | -X) _need_x=y ;;
+		--need-env-vars | -E)
+			_need_env_vars="$2"
+			shift
+			;;
+		--*) # pass arg to bubblewrap
+			_bwrap_extra_args+=" $arg"
+			;;
+		*) break ;;
+	esac
+
+	shift
+done
+
+[ "$DEBUG" = "y" ] && _debug=y
+
+_bwrap_feature_args=
+
+# high-level options
+if [ "$_network" ]; then
+	_need_netns=y
+	_need_dns=y
+	_need_nss=y
+fi
+
+# low-level options
+if [ "$_need_dev" ]; then
+	_bwrap_feature_args+=" --dev /dev"
+fi
+if [ "$_need_proc" ]; then
+	_bwrap_feature_args+=" --proc /proc"
+fi
+if [ "$_need_dns" ]; then
+	_bwrap_feature_args+=" --ro-bind /etc/resolv.conf /etc/resolv.conf"
+fi
+if [ "$_need_netns" ]; then
+	_bwrap_feature_args+=" --share-net"
+fi
+if [ "$_need_nss" ]; then
+	_bwrap_feature_args+=" --ro-bind /etc/hosts /etc/hosts"
+	_bwrap_feature_args+=" --ro-bind /etc/nsswitch.conf /etc/nsswitch.conf"
+fi
+if [ "$_need_x" ]; then
+	: "${XAUTHORITY:="$HOME/.Xauthority"}"
+	_need_env_vars+=" DISPLAY"
+	_need_env_vars+=" XAUTHORITY"
+	_bwrap_feature_args+=" --ro-bind $XAUTHORITY $XAUTHORITY"
+	_bwrap_feature_args+=" --ro-bind /tmp/.X11-unix/X1 /tmp/.X11-unix/X1"
+	_bwrap_feature_args+=" --ro-bind /etc/fonts /etc/fonts"
+fi
+
+# environment variables
+_bwrap_env_vars=
+for var in $BUBBLEJAIL_ENV_WHITELIST $_need_env_vars; do
+	[ -n "$var" ] || continue
+	val="${!var}"
+	[ -n "$val" ] || continue
+	_bwrap_env_vars+=" --setenv $var $val"
+done
+
+[ -n "$_debug" ] && set -x
+
+#shellcheck disable=SC2086
+exec env -i bwrap \
+	--ro-bind /usr /usr \
+	--symlink usr/lib /lib \
+	--symlink usr/lib64 /lib64 \
+	--symlink usr/bin /bin \
+	--symlink usr/sbin /sbin \
+	--tmpfs /run \
+	--tmpfs /tmp \
+	--tmpfs /var \
+	--symlink /tmp var/tmp \
+	--chdir / \
+	--as-pid-1 \
+	--die-with-parent \
+	--unshare-all \
+	--setenv PATH /usr/bin \
+	$_bwrap_env_vars \
+	$_bwrap_feature_args \
+	$_bwrap_extra_args \
+	"$@"
