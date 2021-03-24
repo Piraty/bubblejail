@@ -1,0 +1,16 @@
+#!/bin/sh
+
+#FIXME: can't join calls
+
+mkdir -p "$HOME/Downloads/teams"
+
+exec bubblejail \
+	--need-x \
+	--need-dev \
+	--need-proc \
+	--need-netns \
+	--need-env-vars "HOME" \
+	"--bind $HOME/Downloads/teams $HOME/Downloads" \
+	"--bind $HOME/.config/Microsoft/ $HOME/.config/Microsoft/" \
+	$BUBBLEJAIL_WRAPPER_TEAMS_EXTRA_ARGS \
+	${BUBBLEJAIL_WRAPPER_TEAMS_CMD:-teams} "$@"
