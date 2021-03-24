@@ -4,6 +4,7 @@
 
 mkdir -p "$HOME/Downloads/teams"
 
+#shellcheck disable=SC2086
 exec bubblejail \
 	--need-x \
 	--need-dev \
