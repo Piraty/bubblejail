@@ -1,13 +1,13 @@
 # Bubblejail
 
-Bubblejail is a wrapper around [bubblewrap](https://github.com/containers/bubblewrap/)
+Bubblejail is a wrapper around [bubblewrap](https://github.com/containers/bubblewrap/).
 
 Extending on bubblewrap's
 [bubblewrap-shell example](https://github.com/containers/bubblewrap/blob/b8e6e1159e63045679ae57b8b379b39eae7798a6/demos/bubblewrap-shell.sh),
 Bubblejail aims to provide a convenient interface to bubblewrap's rather raw
 cli-options by offering high-level feature flags to ease common tasks necessary
-to spawn containerized applications (like mounting relevant mountpoints to give
-the application access to you x-server).
+to spawn containerized applications (like mounting relevant paths to give the
+application access to your x-server).
 
 ## Usage
 
@@ -61,7 +61,7 @@ bubblejail --x11 --need-proc --need-dev --need-env-vars "HOME" firefox
 
 ## Application Wrappers
 
-Wrappers for applications with a minimal-working config are privided in the
+Wrappers for applications with a minimal-working config are provided in the
 `./wrappers` directory, which are designed to allow for easy customizations
 through environment variables.
 
