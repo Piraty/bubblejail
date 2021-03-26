@@ -42,6 +42,10 @@ ENV
 USAGE
 }
 
+echo_debug() {
+	[ -n "$_debug" ] && printf '+ DEBUG %s\n' "$@"
+}
+
 if [ "$#" = "0" ]; then
 	usage
 	exit 1
@@ -62,9 +66,7 @@ _need_path_rw=
 
 while [ "$#" -gt 1 ]; do
 	arg="$1"
-	if [ -n "$_debug" ]; then
-		echo "DEBUG ARG: $arg"
-	fi
+	echo_debug "arg=$arg"
 	case "$arg" in
 		--help | -h)
 			usage
