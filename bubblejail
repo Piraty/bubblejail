@@ -31,6 +31,8 @@ OPTIONS
   --need-proc          Mount procfs
   --need-x             Make X work
   --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+  --ro <path>          bind <path> in the container (read-only)
+  --rw <path>          bind <path> in the container
 
 ENV
   $app respects the following environment variables
@@ -55,6 +57,8 @@ _need_nss=
 _need_proc=
 _need_x=
 _need_env_vars=
+_need_path_ro=
+_need_path_rw=
 
 while [ "$#" -gt 1 ]; do
 	arg="$1"
@@ -76,6 +80,14 @@ while [ "$#" -gt 1 ]; do
 		--need-x | -X) _need_x=y ;;
 		--need-env-vars | -E)
 			_need_env_vars="$2"
+			shift
+			;;
+		--ro)
+			_need_path_ro+=" $2"
+			shift
+			;;
+		--rw)
+			_need_path_rw+=" $2"
 			shift
 			;;
 		--*) # pass arg to bubblewrap
@@ -115,6 +127,15 @@ if [ "$_need_nss" ]; then
 	_bwrap_feature_args+=" --ro-bind /etc/hosts /etc/hosts"
 	_bwrap_feature_args+=" --ro-bind /etc/nsswitch.conf /etc/nsswitch.conf"
 fi
+if [ "$_need_path_ro" ]; then
+	for p in $_need_path_ro; do
+		_bwrap_feature_args+=" --ro-bind $p $p"
+	done
+fi
+if [ "$_need_path_rw" ]; then
+	for p in $_need_path_rw; do
+		_bwrap_feature_args+=" --bind $p $p"
+	done
 if [ "$_need_x" ]; then
 	: "${XAUTHORITY:="$HOME/.Xauthority"}"
 	_need_env_vars+=" DISPLAY"

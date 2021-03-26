@@ -40,6 +40,8 @@ OPTIONS
   --need-proc          Mount procfs
   --need-x             Make X work
   --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+  --ro <path>          bind <path> in the container (read-only)
+  --rw <path>          bind <path> in the container
 
 ENV
   bubblejail respects the following environment variables
