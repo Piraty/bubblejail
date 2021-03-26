@@ -72,10 +72,15 @@ $ cat $HOME/.bubblejail
 #/bin/sh
 #bubblejail config - source this by the shell calling the bubblejail wrappers
 
+# global: honor locale and qt theme
 BUBBLEJAIL_ENV_WHITELIST="LANG LC_TIME QT_STYLE_OVERRIDE=gtk2"
 export BUBBLEJAIL_ENV_WHITELIST
 
-# honor gtk theme
-BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS=" --ro-bind $HOME/.config/gtk-3.0/settings.ini $HOME/.config/gtk-3.0/settings.ini"
+# firefox: honor gtk theme
+BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS="--ro $HOME/.config/gtk-3.0/settings.ini"
+# firefox: use my personal profile
+BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR="$HOME/.mozilla/firefox/deadbeef.default-133713371337"
+
 export BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS
+export BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR
 ```
