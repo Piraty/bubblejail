@@ -23,13 +23,13 @@ OPTIONS
   --debug              Show bwrap command line
 
   --network            Add network features (nss,dns,netns)
+  --x11                Make X11 work
 
   --need-dev           Mount new devtmpfs
   --need-dns           Share resolvers with container
   --need-netns         Retain the network namespace
   --need-nss
   --need-proc          Mount procfs
-  --need-x             Make X work
   --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
   --ro <path>          bind <path> in the container (read-only)
   --rw <path>          bind <path> in the container
@@ -49,13 +49,13 @@ fi
 
 _debug=
 _network=
+_x11=
 
 _need_dev=
 _need_dns=
 _need_netns=
 _need_nss=
 _need_proc=
-_need_x=
 _need_env_vars=
 _need_path_ro=
 _need_path_rw=
@@ -77,7 +77,7 @@ while [ "$#" -gt 1 ]; do
 		--need-proc) _need_proc=y ;;
 		--need-netns) _need_netns=y ;;
 		--need-nss) _need_nss=y ;;
-		--need-x | -X) _need_x=y ;;
+		--x11 | -X) _x11=y ;;
 		--need-env-vars | -E)
 			_need_env_vars="$2"
 			shift
@@ -101,16 +101,23 @@ done
 
 [ "$DEBUG" = "y" ] && _debug=y
 
-_bwrap_feature_args=
-
 # high-level options
 if [ "$_network" ]; then
 	_need_netns=y
 	_need_dns=y
 	_need_nss=y
 fi
+if [ "$_x11" ]; then
+	: "${XAUTHORITY:="$HOME/.Xauthority"}"
+	_need_env_vars+=" DISPLAY"
+	_need_env_vars+=" XAUTHORITY"
+	_need_path_ro+=" $XAUTHORITY"
+	_need_path_ro+=" /tmp/.X11-unix/X1"
+	_need_path_ro+=" /etc/fonts"
+fi
 
 # low-level options
+_bwrap_feature_args=
 if [ "$_need_dev" ]; then
 	_bwrap_feature_args+=" --dev /dev"
 fi
@@ -136,13 +143,6 @@ if [ "$_need_path_rw" ]; then
 	for p in $_need_path_rw; do
 		_bwrap_feature_args+=" --bind $p $p"
 	done
-if [ "$_need_x" ]; then
-	: "${XAUTHORITY:="$HOME/.Xauthority"}"
-	_need_env_vars+=" DISPLAY"
-	_need_env_vars+=" XAUTHORITY"
-	_bwrap_feature_args+=" --ro-bind $XAUTHORITY $XAUTHORITY"
-	_bwrap_feature_args+=" --ro-bind /tmp/.X11-unix/X1 /tmp/.X11-unix/X1"
-	_bwrap_feature_args+=" --ro-bind /etc/fonts /etc/fonts"
 fi
 
 # environment variables

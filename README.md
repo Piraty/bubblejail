@@ -32,13 +32,13 @@ OPTIONS
   --debug              Show bwrap command line
 
   --network            Add network features (nss,dns,netns)
+  --x11                Make X11 work
 
   --need-dev           Mount new devtmpfs
   --need-dns           Share resolvers with container
   --need-netns         Retain the network namespace
   --need-nss
   --need-proc          Mount procfs
-  --need-x             Make X work
   --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
   --ro <path>          bind <path> in the container (read-only)
   --rw <path>          bind <path> in the container
@@ -48,6 +48,15 @@ ENV
 
   BUBBLEJAIL_ENV_WHITELIST    white-space separated list of variable names which
                               are passed to the container
+```
+
+## Examples
+
+sandbox a graphical application
+```
+bubblejail --x11 xeyes
+
+bubblejail --x11 --need-proc --need-dev --need-env-vars "HOME" firefox
 ```
 
 ## Application Wrappers

@@ -4,7 +4,7 @@ mkdir -p "$HOME/Downloads/firefox"
 
 #shellcheck disable=SC2086
 exec bubblejail \
-	--need-x \
+	--x11 \
 	--need-dev \
 	--need-proc \
 	--need-netns \
