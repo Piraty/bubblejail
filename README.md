@@ -12,16 +12,16 @@ the application access to you x-server).
 ## Usage
 
 ```
-bubblewrap [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
+bubblejail [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
 
 DESCRIPTION
   bubblejail executes commands in linux containers by using the bubblewrap container
   setup utility (see: https://github.com/containers/bubblewrap/).
 
   bubblejail provides a convenient interface to the rather basic and simple bwrap, to
-  provide a way to ease common tasks like mounting relevant mountpoints for
-  graphical applications.  It uses an opt-in design and works by starting with
-  a minimal bubblewrap config that needs to be extended on-demand and on
+  easily solve common tasks like mounting relevant mountpoints for graphical
+  applications.  It follows an opt-in design and works by starting with a
+  minimal bubblewrap config that needs to be extended on-demand and on
   per-application use case, rather than the opposite way around (see firejail).
 
   bubblejail comes with a set of predefined wrappers for a few commonly used
@@ -31,7 +31,7 @@ OPTIONS
   --help               Show this help
   --debug              Show bwrap command line
 
-  --network            Add network features (nss,dns,netns)
+  --network            Add network features (dns,netns,nss)
   --x11                Make X11 work
 
   --need-dev           Mount new devtmpfs
