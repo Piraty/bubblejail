@@ -52,11 +52,16 @@ ENV
 
 ## Examples
 
+sandbox an untrusted binary
+```
+bubblejail ./ctf
+```
+
 sandbox a graphical application
 ```
 bubblejail --x11 xeyes
 
-bubblejail --x11 --need-proc --need-dev --need-env-vars "HOME" firefox
+bubblejail --x11 --network --need-proc --need-dev --need-env-vars "HOME" firefox
 ```
 
 ## Application Wrappers
