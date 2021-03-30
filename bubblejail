@@ -6,17 +6,15 @@ usage() {
 $app [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
 
 DESCRIPTION
-  $app executes commands in linux containers by using the bubblewrap container
-  setup utility (see: https://github.com/containers/bubblewrap/).
+  Run COMMAND [ARGS] in a sandbox by using the bubblewrap container setup
+  utility (see: https://github.com/containers/bubblewrap/).
 
-  $app provides a convenient interface to the rather basic and simple bwrap, to
-  easily solve common tasks like mounting relevant mountpoints for graphical
-  applications.  It follows an opt-in design and works by starting with a
-  minimal bubblewrap config that needs to be extended on-demand and on
-  per-application use case, rather than the opposite way around (see firejail).
+  The sandbox is configured to be most restrictive by default but allows for
+  easy expansion on a per-application base.
 
-  $app comes with a set of predefined wrappers for a few commonly used
-  applications.
+  BWRAP_OPTIONS it will be appended to the actual bwrap call and have to be
+  provided as a single string each.
+	  Example: bubblejail --network "--hostname mysandbox" bash
 
 OPTIONS
   --help               Show this help

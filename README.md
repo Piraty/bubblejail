@@ -1,13 +1,18 @@
 # Bubblejail
 
-Bubblejail is a wrapper around [bubblewrap](https://github.com/containers/bubblewrap/).
+Run commands in linux containers (a.k.a. sandbox).
 
-Extending on bubblewrap's
-[bubblewrap-shell example](https://github.com/containers/bubblewrap/blob/b8e6e1159e63045679ae57b8b379b39eae7798a6/demos/bubblewrap-shell.sh),
-Bubblejail aims to provide a convenient interface to bubblewrap's rather raw
+Bubblejail is a wrapper around [bubblewrap](https://github.com/containers/bubblewrap/).
+It extends on on bubblewrap's
+[bubblewrap-shell example](https://github.com/containers/bubblewrap/blob/b8e6e1159e63045679ae57b8b379b39eae7798a6/demos/bubblewrap-shell.sh)
+and aims to provide a more convenient interface to bubblewrap's rather raw
 cli-options by offering high-level feature flags to ease common tasks necessary
-to spawn containerized applications (like mounting relevant paths to give the
+to spawn sandboxed applications (like mounting relevant paths to give the
 application access to your x-server).
+
+It uses an opt-in design and works by starting out with a restrictive configuration
+that requires expansion on a per-application base; this is in contrast to
+similar projects which use the opposite approach (see firejail).
 
 ## Usage
 
@@ -15,17 +20,15 @@ application access to your x-server).
 bubblejail [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
 
 DESCRIPTION
-  bubblejail executes commands in linux containers by using the bubblewrap container
-  setup utility (see: https://github.com/containers/bubblewrap/).
+  Run COMMAND [ARGS] in a sandbox by using the bubblewrap container setup
+  utility (see: https://github.com/containers/bubblewrap/).
 
-  bubblejail provides a convenient interface to the rather basic and simple bwrap, to
-  easily solve common tasks like mounting relevant mountpoints for graphical
-  applications.  It follows an opt-in design and works by starting with a
-  minimal bubblewrap config that needs to be extended on-demand and on
-  per-application use case, rather than the opposite way around (see firejail).
+  The sandbox is configured to be most restrictive by default but allows for
+  easy expansion on a per-application base.
 
-  bubblejail comes with a set of predefined wrappers for a few commonly used
-  applications.
+  BWRAP_OPTIONS it will be appended to the actual bwrap call and have to be
+  provided as a single string each.
+	  Example: bubblejail --network "--hostname mysandbox" bash
 
 OPTIONS
   --help               Show this help
@@ -57,7 +60,7 @@ sandbox an untrusted binary
 bubblejail ./ctf
 ```
 
-sandbox a graphical application
+sandbox graphical applications
 ```
 bubblejail --x11 xeyes
 
@@ -66,9 +69,12 @@ bubblejail --x11 --network --need-proc --need-dev --need-env-vars "HOME" firefox
 
 ## Application Wrappers
 
+_THIS IS WORK-IN-PROGRESS_
+_please send patches_
+
 Wrappers for applications with a minimal-working config are provided in the
-`./wrappers` directory, which are designed to allow for easy customizations
-through environment variables.
+`./wrappers` directory. They allow for easy customizations through environment
+variables.
 
 Here is an example:
 
@@ -81,9 +87,12 @@ $ cat $HOME/.bubblejail
 BUBBLEJAIL_ENV_WHITELIST="LANG LC_TIME QT_STYLE_OVERRIDE=gtk2"
 export BUBBLEJAIL_ENV_WHITELIST
 
-# firefox: honor gtk theme
+
+# firefox
+
+# honor gtk theme
 BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS="--ro $HOME/.config/gtk-3.0/settings.ini"
-# firefox: use my personal profile
+# use personal profile
 BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR="$HOME/.mozilla/firefox/deadbeef.default-133713371337"
 
 export BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS
