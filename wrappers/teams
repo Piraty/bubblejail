@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#FIXME: can't join calls
+#FIXME: can't join calls, probably needs dbus/pulseaudio magic
 
 mkdir -p "$HOME/Downloads/teams"
 
@@ -10,8 +10,9 @@ exec bubblejail \
 	--need-dev \
 	--need-proc \
 	--need-netns \
-	--need-env-vars "HOME" \
-	"--bind $HOME/Downloads/teams $HOME/Downloads" \
-	"--bind $HOME/.config/Microsoft/ $HOME/.config/Microsoft/" \
+	--need-env-vars "HOME TZ" \
+	--rw "$HOME/Downloads/teams" \
+	--rw "$HOME/.config/Microsoft/" \
+	"--ro-bind-try /etc/localtime /etc/localtime" \
 	$BUBBLEJAIL_WRAPPER_TEAMS_EXTRA_ARGS \
 	${BUBBLEJAIL_WRAPPER_TEAMS_CMD:-teams} "$@"
