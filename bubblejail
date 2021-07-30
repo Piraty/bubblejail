@@ -167,11 +167,13 @@ exec env -i bwrap \
 	--tmpfs /tmp \
 	--tmpfs /var \
 	--symlink /tmp var/tmp \
-	--chdir / \
+	--dir "$HOME" \
+	--chdir "$HOME" \
 	--as-pid-1 \
 	--die-with-parent \
 	--unshare-all \
 	--setenv PATH /usr/bin \
+	--setenv HOME "$HOME" \
 	$_bwrap_env_vars \
 	$_bwrap_feature_args \
 	$_bwrap_extra_args \
