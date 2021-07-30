@@ -1,0 +1,19 @@
+#!/bin/bash
+
+: "${BUBBLEJAIL_WRAPPER_KEEPASS_DB:=}"
+
+_extra=
+
+if [ -e "$BUBBLEJAIL_WRAPPER_KEEPASS_DB" ]; then
+	_extra+=" --rw $BUBBLEJAIL_WRAPPER_KEEPASS_DB"
+fi
+
+#shellcheck disable=SC2086
+exec bubblejail \
+	--debug \
+	--x11 \
+	--need-dev \
+	--rw "${XDG_CONFIG_HOME:-"$HOME/.config"}/keepassxc/keepassxc.ini" \
+	--rw "${XDG_CACHE_HOME:-"$HOME/.cache"}/keepassxc/keepassxc.ini" \
+	$_extra \
+	/usr/bin/keepassxc
