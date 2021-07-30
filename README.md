@@ -3,7 +3,7 @@
 Run commands in linux containers (a.k.a. sandbox).
 
 Bubblejail is a wrapper around [bubblewrap](https://github.com/containers/bubblewrap/).
-It extends on on bubblewrap's
+It extends on bubblewrap's
 [bubblewrap-shell example](https://github.com/containers/bubblewrap/blob/b8e6e1159e63045679ae57b8b379b39eae7798a6/demos/bubblewrap-shell.sh)
 and aims to provide a more convenient interface to bubblewrap's rather raw
 cli-options by offering high-level feature flags to ease common tasks necessary
@@ -70,6 +70,7 @@ bubblejail --x11 --network --need-proc --need-dev --need-env-vars "HOME" firefox
 ## Application Wrappers
 
 _THIS IS WORK-IN-PROGRESS_
+
 _please send patches_
 
 Wrappers for applications with a minimal-working config are provided in the
