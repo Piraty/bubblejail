@@ -8,7 +8,7 @@ It extends on bubblewrap's
 and aims to provide a more convenient interface to bubblewrap's rather raw
 cli-options by offering high-level feature flags to ease common tasks necessary
 to spawn sandboxed applications (like mounting relevant paths to give the
-application access to your x-server).
+application access to your display server).
 
 It uses an opt-in design and works by starting out with a restrictive configuration
 that requires expansion on a per-application base; this is in contrast to
@@ -73,16 +73,13 @@ EXAMPLES
 ## Examples
 
 sandbox an untrusted binary
-```
-bubblejail ./ctf
-```
+
+	bubblejail ./ctf
 
 sandbox graphical applications
-```
-bubblejail --x11 xeyes
 
-bubblejail --x11 --network --need-proc --need-dev --need-env-vars "HOME" firefox
-```
+	bubblejail --x11 xeyes
+	bubblejail --x11 --network --need-proc --need-dev --need-env-vars "HOME" firefox
 
 ## Application Wrappers
 
@@ -91,28 +88,26 @@ _THIS IS WORK-IN-PROGRESS_
 _please send patches_
 
 Wrappers for applications with a minimal-working config are provided in the
-`./wrappers` directory. They allow for easy customizations through environment
+[./wrappers](./wrappers) directory. They allow for easy customizations through environment
 variables.
 
 Here is an example:
 
-```
-$ cat $HOME/.bubblejail
-#/bin/sh
-#bubblejail config - source this by the shell calling the bubblejail wrappers
+	$ cat $HOME/.bubblejail
+	#/bin/sh
+	#bubblejail config - source this by the shell calling the bubblejail wrappers
 
-# global: honor locale and qt theme
-BUBBLEJAIL_ENV_WHITELIST="LANG LC_TIME QT_STYLE_OVERRIDE=gtk2"
-export BUBBLEJAIL_ENV_WHITELIST
+	# global: honor locale and qt theme
+	BUBBLEJAIL_ENV_WHITELIST="LANG LC_TIME QT_STYLE_OVERRIDE=gtk2"
+	export BUBBLEJAIL_ENV_WHITELIST
 
 
-# firefox
+	# firefox
 
-# honor gtk theme
-BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS="--ro $HOME/.config/gtk-3.0/settings.ini"
-# use personal profile
-BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR="$HOME/.mozilla/firefox/deadbeef.default-133713371337"
+	# honor gtk theme
+	BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS="--ro $HOME/.config/gtk-3.0/settings.ini"
+	# use personal profile
+	BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR="$HOME/.mozilla/firefox/deadbeef.default-133713371337"
 
-export BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS
-export BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR
-```
+	export BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS
+	export BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR
