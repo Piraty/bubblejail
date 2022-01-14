@@ -17,40 +17,57 @@ similar projects which use the opposite approach (see firejail).
 ## Usage
 
 ```
-bubblejail [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in linux container
+bubblejail [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in container
 
 DESCRIPTION
-  Run COMMAND [ARGS] in a sandbox by using the bubblewrap container setup
-  utility (see: https://github.com/containers/bubblewrap/).
+	Run COMMAND [ARGS] in a sandbox by using the bubblewrap container setup
+	utility (see: https://github.com/containers/bubblewrap/).
 
-  The sandbox is configured to be most restrictive by default but allows for
-  easy expansion on a per-application base.
+	The sandbox is configured to be most restrictive by default but allows for
+	easy expansion on a per-application base.
 
-  BWRAP_OPTIONS it will be appended to the actual bwrap call and have to be
-  provided as a single string each.
-	  Example: bubblejail --network "--hostname mysandbox" bash
+	OPTIONS provide an easy way opt-in to common use-cases. They may optionally
+	be followed by BWRAP_OPTIONS which will be appended as raw option to the
+	actual bwrap call. Note that OPTIONS may not come after BWRAP_OPTIONS.
 
 OPTIONS
-  --help               Show this help
-  --debug              Show bwrap command line
+  General options:
 
-  --network            Add network features (dns,netns,nss)
-  --x11                Make X11 work
+	--help
+		Show this help
 
-  --need-dev           Mount new devtmpfs
-  --need-dns           Share resolvers with container
-  --need-netns         Retain the network namespace
-  --need-nss
-  --need-proc          Mount procfs
-  --need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
-  --ro <path>          bind <path> in the container (read-only)
-  --rw <path>          bind <path> in the container
+	--debug
+		Show bwrap command line
 
-ENV
+  High-level options:
+
+	--network
+		Add network features. Currently equivalent with: --need-dns
+		--need-netns --need-nss
+
+	--x11
+		Make X11 work
+
+  Low-level options:
+	--need-dev           Mount new devtmpfs
+	--need-dns           Share resolvers with container
+	--need-netns         Retain the network namespace
+	--need-nss
+	--need-proc          Mount procfs
+	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+	--ro <path>          bind <path> in the container (read-only)
+	--rw <path>          bind <path> in the container
+
+ENVIRONMENT
   bubblejail respects the following environment variables
 
-  BUBBLEJAIL_ENV_WHITELIST    white-space separated list of variable names which
-                              are passed to the container
+	BUBBLEJAIL_ENV_WHITELIST
+		white-space separated list of variable names which
+		are passed to the container
+
+EXAMPLES
+	bubblejail --x11 --uid 2222 sh -c 'id -u && xeyes'
+	bubblejail --network --ro-bind $HOME/src /src ls /src
 ```
 
 ## Examples
