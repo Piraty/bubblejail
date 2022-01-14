@@ -6,25 +6,25 @@
 : "${BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS:=}"
 : "${BUBBLEJAIL_WRAPPER_FIREFOX_CMD:=firefox}"
 
-_extra=
-_args=
+bubblejail_args=
+_bwrap_args=
+_firefox_args=
+
+# profile. use an empty profile by default, mount user's profile if requested
+if [ -z "$BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR" ]; then
+	_bwrap_args="--tmpfs $HOME/Downloads"
+	# don't accept requests from other applications
+	_firefox_args="--no-remote"
+else
+	bubblejail_args+=" --rw $HOME/.mozilla/firefox/profiles.ini"
+	bubblejail_args+=" --rw $BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR"
+	_firefox_args+=" --profile $BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR"
+fi
 
 # persistent download dir
 if [ "$BUBBLEJAIL_WRAPPER_FIREFOX_DOWNLOADS_DIR" ]; then
 	mkdir -p "$BUBBLEJAIL_WRAPPER_FIREFOX_DOWNLOADS_DIR"
-	_extra+=" --rw $BUBBLEJAIL_WRAPPER_FIREFOX_DOWNLOADS_DIR"
-fi
-
-# use an empty profile by default, bind user's profile on demand
-if [ -z "$BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR" ]; then
-	# don't accept requests from other applications
-	_args="--no-remote"
-else
-	# mount profile related paths
-	_extra+=" --rw $HOME/.mozilla/firefox/profiles.ini"
-	_extra+=" --rw $BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR"
-	# force firefox to use that profile
-	_args="--profile $BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR"
+	_bwrap_args+=" --bind $BUBBLEJAIL_WRAPPER_FIREFOX_DOWNLOADS_DIR $HOME/Downloads"
 fi
 
 #shellcheck disable=SC2086
@@ -33,9 +33,11 @@ exec bubblejail \
 	--need-dev \
 	--need-proc \
 	--need-netns \
+	--need-dns \
 	--need-env-vars "HOME" \
-	$_extra \
+	$bubblejail_args \
 	$BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS \
+	$_bwrap_args \
 	$BUBBLEJAIL_WRAPPER_FIREFOX_CMD \
-		$_args \
-		"$@"
+	$_firefox_args \
+	"$@"
