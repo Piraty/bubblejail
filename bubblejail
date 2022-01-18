@@ -39,13 +39,17 @@ OPTIONS
 
   Low-level options:
 	--need-dev           Mount new devtmpfs
-	--need-dns           Share resolvers with container
-	--need-netns         Retain the network namespace
-	--need-nss
 	--need-proc          Mount procfs
-	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+
+	--need-dns           Share /etc/resolv.conf with container
+	--need-nss
+
 	--ro <path>          bind <path> in the container (read-only)
 	--rw <path>          bind <path> in the container
+
+	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+
+	--need-netns         Retain the network namespace
 
 ENVIRONMENT
   $app respects the following environment variables
@@ -95,12 +99,7 @@ while [ "$#" -gt 0 ]; do
 		--need-dev) _need_dev=y ;;
 		--need-dns) _need_dns=y ;;
 		--need-proc) _need_proc=y ;;
-		--need-netns) _need_netns=y ;;
 		--need-nss) _need_nss=y ;;
-		--need-env-vars | -E)
-			_need_env_vars="$_need_env_vars $2"
-			shift
-			;;
 		--ro)
 			_need_path_ro+=" $2"
 			shift
@@ -109,6 +108,11 @@ while [ "$#" -gt 0 ]; do
 			_need_path_rw+=" $2"
 			shift
 			;;
+		--need-env-vars | -E)
+			_need_env_vars="$_need_env_vars $2"
+			shift
+			;;
+		--need-netns) _need_netns=y ;;
 		*)
 			echo_debug "stop option parsing"
 			break
@@ -137,8 +141,9 @@ if [ "$_x11" ]; then
 	_need_path_ro+=" /etc/fonts"
 fi
 
-# low-level options
 _bwrap_feature_args=
+
+# mounts
 if [ "$_need_dev" ]; then
 	_bwrap_feature_args+=" --dev /dev"
 fi
@@ -147,9 +152,6 @@ if [ "$_need_proc" ]; then
 fi
 if [ "$_need_dns" ]; then
 	_bwrap_feature_args+=" --ro-bind /etc/resolv.conf /etc/resolv.conf"
-fi
-if [ "$_need_netns" ]; then
-	_bwrap_feature_args+=" --share-net"
 fi
 if [ "$_need_nss" ]; then
 	_bwrap_feature_args+=" --ro-bind /etc/hosts /etc/hosts"
@@ -166,13 +168,18 @@ if [ "$_need_path_rw" ]; then
 	done
 fi
 
+# namespaces
+_bwrap_feature_args+=" --unshare-all"
+if [ "$_need_netns" ]; then
+	_bwrap_feature_args+=" --share-net"
+fi
+
 # environment variables
-_bwrap_env_vars=
 for var in $BUBBLEJAIL_ENV_WHITELIST $_need_env_vars; do
 	[ -n "$var" ] || continue
 	val="${!var}"
 	[ -n "$val" ] || continue
-	_bwrap_env_vars+=" --setenv $var $val"
+	_bwrap_feature_args+=" --setenv $var $val"
 done
 
 [ -n "$_debug" ] && set -x
