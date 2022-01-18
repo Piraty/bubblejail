@@ -88,12 +88,12 @@ while [ "$#" -gt 0 ]; do
 			;;
 		--debug) _debug=y ;;
 		--network) _network=y ;;
+		--x11 | -X) _x11=y ;;
 		--need-dev) _need_dev=y ;;
 		--need-dns) _need_dns=y ;;
 		--need-proc) _need_proc=y ;;
 		--need-netns) _need_netns=y ;;
 		--need-nss) _need_nss=y ;;
-		--x11 | -X) _x11=y ;;
 		--need-env-vars | -E)
 			_need_env_vars="$2"
 			shift
@@ -128,7 +128,9 @@ if [ "$_x11" ]; then
 	_need_env_vars+=" DISPLAY"
 	_need_env_vars+=" XAUTHORITY"
 	_need_path_ro+=" $XAUTHORITY"
-	_need_path_ro+=" /tmp/.X11-unix/X1"
+	for s in /tmp/.X11-unix/X?*; do
+		_need_path_ro+=" $s"
+	done
 	_need_path_ro+=" /etc/fonts"
 fi
 
