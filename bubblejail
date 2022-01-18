@@ -95,7 +95,7 @@ while [ "$#" -gt 0 ]; do
 		--need-netns) _need_netns=y ;;
 		--need-nss) _need_nss=y ;;
 		--need-env-vars | -E)
-			_need_env_vars="$2"
+			_need_env_vars="$_need_env_vars $2"
 			shift
 			;;
 		--ro)
