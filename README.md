@@ -45,6 +45,9 @@ OPTIONS
 		Add network features. Currently equivalent with: --need-dns --need-netns
 		--need-nss
 
+	--pulseaudio
+		Make pulseaudio work
+
 	--wayland
 		Make Wayland work
 
