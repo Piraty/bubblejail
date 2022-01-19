@@ -42,8 +42,8 @@ OPTIONS
   High-level options:
 
 	--network
-		Add network features. Currently equivalent with: --need-dns --need-netns
-		--need-nss
+		Add network features. Currently equivalent with: --need-dns --need-nss
+		--share-net
 
 	--pulseaudio
 		Make pulseaudio work
@@ -67,7 +67,11 @@ OPTIONS
 
 	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
 
-	--need-netns         Retain the network namespace
+	--share-all          Instead of creating all available namespaces, only
+	                     create the mount namespace
+	--share-ipc          Share the ipc namespace
+	--share-net          Share the network namespace
+
 
 ENVIRONMENT
   bubblejail respects the following environment variables

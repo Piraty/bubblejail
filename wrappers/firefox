@@ -32,7 +32,7 @@ exec bubblejail \
 	--x11 \
 	--need-devfs \
 	--need-procfs \
-	--need-netns \
+	--share-net \
 	--need-dns \
 	--need-env-vars "HOME" \
 	$bubblejail_args \

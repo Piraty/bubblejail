@@ -30,8 +30,8 @@ OPTIONS
   High-level options:
 
 	--network
-		Add network features. Currently equivalent with: --need-dns --need-netns
-		--need-nss
+		Add network features. Currently equivalent with: --need-dns --need-nss
+		--share-net
 
 	--pulseaudio
 		Make pulseaudio work
@@ -55,7 +55,11 @@ OPTIONS
 
 	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
 
-	--need-netns         Retain the network namespace
+	--share-all          Instead of creating all available namespaces, only
+	                     create the mount namespace
+	--share-ipc          Share the ipc namespace
+	--share-net          Share the network namespace
+
 
 ENVIRONMENT
   bubblejail respects the following environment variables
@@ -68,6 +72,15 @@ EXAMPLES
 	bubblejail --x11 --uid 2222 sh -c 'id -u && xeyes'
 	bubblejail --network --ro-bind $HOME/src /src ls /src
 USAGE
+}
+
+print_deprecation_warning() {
+	_flag="$1"
+	_ver="$2"
+	_alt="$3"
+	printf '%s: %s\n' \
+		"DEPRECATION WARNING" \
+		"flag $_flag is scheduled for removal in version $_ver (use $_alt instead)"
 }
 
 echo_debug() {
@@ -91,12 +104,14 @@ _x11=
 
 _need_devfs=
 _need_dns=
-_need_netns=
 _need_nss=
 _need_procfs=
 _need_env_vars=
 _need_path_ro=
 _need_path_rw=
+_need_ns_all=
+_need_ns_ipc=
+_need_ns_net=
 
 _bwrap_feature_args=
 
@@ -130,7 +145,15 @@ while [ "$#" -gt 0 ]; do
 			_need_env_vars="$_need_env_vars $2"
 			shift
 			;;
-		--need-netns) _need_netns=y ;;
+		--share-all) _need_ns_all=y ;;
+		--share-net) _need_ns_net=y ;;
+		--share-ipc) _need_ns_ipc=y ;;
+
+		# deprecated options
+		--need-netns)
+			print_deprecation_warning "$1" 1.0.0 "--share-net"
+			_need_ns_net=y
+			;;
 		*)
 			echo_debug "stop option parsing"
 			break
@@ -142,8 +165,8 @@ done
 
 # high-level options
 if [ "$_network" ]; then
-	_need_netns=y
 	_need_dns=y
+	_need_ns_net=y
 	_need_nss=y
 fi
 if [ "$_pulseaudio" ]; then
@@ -196,9 +219,17 @@ if [ "$_need_path_rw" ]; then
 fi
 
 # namespaces
-_bwrap_feature_args+=" --unshare-all"
-if [ "$_need_netns" ]; then
-	_bwrap_feature_args+=" --share-net"
+if [ "$_need_ns_all" ]; then
+	:
+else
+	# mimic `bwrap --unshare-all`
+	# skip namespace creation for those requested for retention
+	_bwrap_feature_args+=" --unshare-cgroup-try"
+	[ "$_need_ns_ipc" ] || _bwrap_feature_args+=" --unshare-ipc"
+	[ "$_need_ns_net" ] || _bwrap_feature_args+=" --unshare-net"
+	_bwrap_feature_args+=" --unshare-pid"
+	_bwrap_feature_args+=" --unshare-user-try"
+	_bwrap_feature_args+=" --unshare-uts"
 fi
 
 # environment variables
@@ -226,7 +257,6 @@ exec env -i bwrap \
 	--chdir "$HOME" \
 	--as-pid-1 \
 	--die-with-parent \
-	--unshare-all \
 	--setenv PATH /usr/bin \
 	--setenv HOME "$HOME" \
 	$_bwrap_feature_args \

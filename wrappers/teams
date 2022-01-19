@@ -9,7 +9,7 @@ exec bubblejail \
 	--x11 \
 	--need-devfs \
 	--need-procfs \
-	--need-netns \
+	--share-net \
 	--need-env-vars "HOME TZ" \
 	--rw "$HOME/Downloads/teams" \
 	--rw "$HOME/.config/Microsoft/" \
