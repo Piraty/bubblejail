@@ -111,3 +111,7 @@ Here is an example:
 
 	export BUBBLEJAIL_WRAPPER_FIREFOX_EXTRA_ARGS
 	export BUBBLEJAIL_WRAPPER_FIREFOX_PROFILE_DIR
+
+## Similar Projects
+
+* [igo95862/bubblejail](https://github.com/igo95862/bubblejail)
