@@ -29,6 +29,7 @@ fi
 
 #shellcheck disable=SC2086
 exec bubblejail \
+	--alsa \
 	--x11 \
 	--need-devfs \
 	--need-procfs \

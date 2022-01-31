@@ -29,6 +29,9 @@ OPTIONS
 
   High-level options:
 
+	--alsa
+		Make alsa work
+
 	--network
 		Add network features. Currently equivalent with: --need-dns --need-nss
 		--share-net
@@ -100,6 +103,7 @@ fi
 : "${XDG_RUNTIME_DIR:="/run/user/$(id -u)/"}"
 
 _debug=
+_alsa=
 _network=
 _pulseaudio=
 _tor=
@@ -107,6 +111,7 @@ _wayland=
 _x11=
 
 _need_devfs=
+_need_dev_path=
 _need_dns=
 _need_nss=
 _need_procfs=
@@ -129,6 +134,7 @@ while [ "$#" -gt 0 ]; do
 			exit 0
 			;;
 		--debug) _debug=y ;;
+		--alsa) _alsa=y ;;
 		--network) _network=y ;;
 		--pulseaudio) _pulseaudio=y ;;
 		--tor) _tor=y ;;
@@ -169,6 +175,33 @@ while [ "$#" -gt 0 ]; do
 done
 
 # high-level options
+if [ "$_alsa" ]; then
+	# this is what strace reported, most is covered with /usr's bind-mount for now
+	#/usr/etc/alsa/conf.d
+	#/usr/share/alsa/alsa.conf
+	#/usr/share/alsa/cards/aliases.conf
+	#/usr/share/alsa/ctl/default.conf
+	#/usr/share/alsa/pcm/default.conf
+	#/usr/share/alsa/pcm/dmix.conf
+	#/usr/share/alsa/pcm/dsnoop.conf
+	#/var/lib/alsa/conf.d
+	for _p in \
+		/etc/alsa/conf.d \
+		/etc/asound.conf \
+		/usr/etc/asound.conf \
+		"$HOME/.asoundrc" \
+		"$HOME/.config/alsa/asoundrc"; do
+		[ -r "$_p" ] && _need_path_ro+=" $_p"
+	done
+	_need_dev_path+=" /dev/snd"
+	_need_env_vars+=" ALSA_CARD"
+
+	# alsa needs audio group. fake it
+	_etc_group="$(mktemp)"
+	chmod 600 "$_etc_group"
+	grep audio /etc/group >"$_etc_group"
+	_bwrap_feature_args+=" --ro-bind $_etc_group /etc/group"
+fi
 if [ "$_network" ]; then
 	_need_dns=y
 	_need_ns_net=y
@@ -225,6 +258,11 @@ fi
 if [ "$_need_path_rw" ]; then
 	for p in $_need_path_rw; do
 		_bwrap_feature_args+=" --bind $p $p"
+	done
+fi
+if [ "$_need_dev_path" ]; then
+	for d in $_need_dev_path; do
+		_bwrap_feature_args+=" --dev-bind $d $d"
 	done
 fi
 

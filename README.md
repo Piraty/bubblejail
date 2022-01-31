@@ -41,6 +41,9 @@ OPTIONS
 
   High-level options:
 
+	--alsa
+		Make alsa work
+
 	--network
 		Add network features. Currently equivalent with: --need-dns --need-nss
 		--share-net
