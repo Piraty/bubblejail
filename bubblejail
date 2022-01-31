@@ -202,6 +202,5 @@ exec env -i bwrap \
 	--unshare-all \
 	--setenv PATH /usr/bin \
 	--setenv HOME "$HOME" \
-	$_bwrap_env_vars \
 	$_bwrap_feature_args \
 	"$@"
