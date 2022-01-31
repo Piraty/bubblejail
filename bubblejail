@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 __version__=0.2.0
 
 usage() {
@@ -73,6 +72,9 @@ if [ "$#" = "0" ]; then
 	exit 1
 fi
 
+: "${HOME:="/home/$(id -un)"}"
+: "${XAUTHORITY:="$HOME/.Xauthority"}"
+
 _debug=
 _network=
 _x11=
@@ -85,6 +87,10 @@ _need_proc=
 _need_env_vars=
 _need_path_ro=
 _need_path_rw=
+
+_bwrap_feature_args=
+
+[ -n "$DEBUG" ] && _debug=y
 
 while [ "$#" -gt 0 ]; do
 	echo_debug "arg=$1"
@@ -122,8 +128,6 @@ while [ "$#" -gt 0 ]; do
 	shift
 done
 
-[ "$DEBUG" = "y" ] && _debug=y
-
 # high-level options
 if [ "$_network" ]; then
 	_need_netns=y
@@ -131,7 +135,6 @@ if [ "$_network" ]; then
 	_need_nss=y
 fi
 if [ "$_x11" ]; then
-	: "${XAUTHORITY:="$HOME/.Xauthority"}"
 	_need_env_vars+=" DISPLAY"
 	_need_env_vars+=" XAUTHORITY"
 	_need_path_ro+=" $XAUTHORITY"
@@ -140,8 +143,6 @@ if [ "$_x11" ]; then
 	done
 	_need_path_ro+=" /etc/fonts"
 fi
-
-_bwrap_feature_args=
 
 # mounts
 if [ "$_need_dev" ]; then
