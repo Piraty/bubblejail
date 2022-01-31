@@ -37,8 +37,9 @@ OPTIONS
 		Make X11 work
 
   Low-level options:
-	--need-dev           Mount new devtmpfs
-	--need-proc          Mount procfs
+
+	--need-devfs         Mount new devtmpfs
+	--need-procfs        Mount procfs
 
 	--need-dns           Share /etc/resolv.conf with container
 	--need-nss
@@ -79,11 +80,11 @@ _debug=
 _network=
 _x11=
 
-_need_dev=
+_need_devfs=
 _need_dns=
 _need_netns=
 _need_nss=
-_need_proc=
+_need_procfs=
 _need_env_vars=
 _need_path_ro=
 _need_path_rw=
@@ -102,9 +103,9 @@ while [ "$#" -gt 0 ]; do
 		--debug) _debug=y ;;
 		--network) _network=y ;;
 		--x11 | -X) _x11=y ;;
-		--need-dev) _need_dev=y ;;
+		--need-devfs) _need_devfs=y ;;
 		--need-dns) _need_dns=y ;;
-		--need-proc) _need_proc=y ;;
+		--need-procfs) _need_procfs=y ;;
 		--need-nss) _need_nss=y ;;
 		--ro)
 			_need_path_ro+=" $2"
@@ -145,10 +146,10 @@ if [ "$_x11" ]; then
 fi
 
 # mounts
-if [ "$_need_dev" ]; then
+if [ "$_need_devfs" ]; then
 	_bwrap_feature_args+=" --dev /dev"
 fi
-if [ "$_need_proc" ]; then
+if [ "$_need_procfs" ]; then
 	_bwrap_feature_args+=" --proc /proc"
 fi
 if [ "$_need_dns" ]; then

@@ -30,8 +30,8 @@ fi
 #shellcheck disable=SC2086
 exec bubblejail \
 	--x11 \
-	--need-dev \
-	--need-proc \
+	--need-devfs \
+	--need-procfs \
 	--need-netns \
 	--need-dns \
 	--need-env-vars "HOME" \

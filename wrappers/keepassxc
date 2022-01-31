@@ -12,7 +12,7 @@ fi
 exec bubblejail \
 	--debug \
 	--x11 \
-	--need-dev \
+	--need-devfs \
 	--rw "${XDG_CONFIG_HOME:-"$HOME/.config"}/keepassxc/keepassxc.ini" \
 	--rw "${XDG_CACHE_HOME:-"$HOME/.cache"}/keepassxc/keepassxc.ini" \
 	$_extra \

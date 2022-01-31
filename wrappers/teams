@@ -7,8 +7,8 @@ mkdir -p "$HOME/Downloads/teams"
 #shellcheck disable=SC2086
 exec bubblejail \
 	--x11 \
-	--need-dev \
-	--need-proc \
+	--need-devfs \
+	--need-procfs \
 	--need-netns \
 	--need-env-vars "HOME TZ" \
 	--rw "$HOME/Downloads/teams" \

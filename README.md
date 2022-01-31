@@ -49,14 +49,19 @@ OPTIONS
 		Make X11 work
 
   Low-level options:
-	--need-dev           Mount new devtmpfs
-	--need-dns           Share resolvers with container
-	--need-netns         Retain the network namespace
+
+	--need-devfs         Mount new devtmpfs
+	--need-procfs        Mount procfs
+
+	--need-dns           Share /etc/resolv.conf with container
 	--need-nss
-	--need-proc          Mount procfs
-	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+
 	--ro <path>          bind <path> in the container (read-only)
 	--rw <path>          bind <path> in the container
+
+	--need-env-vars      see BUBBLEJAIL_ENV_WHITELIST below
+
+	--need-netns         Retain the network namespace
 
 ENVIRONMENT
   bubblejail respects the following environment variables
