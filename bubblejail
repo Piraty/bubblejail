@@ -36,6 +36,9 @@ OPTIONS
 	--x11
 		Make X11 work
 
+	--wayland
+		Make Wayland work
+
   Low-level options:
 
 	--need-devfs         Mount new devtmpfs
@@ -79,6 +82,7 @@ fi
 _debug=
 _network=
 _x11=
+_wayland=
 
 _need_devfs=
 _need_dns=
@@ -103,6 +107,7 @@ while [ "$#" -gt 0 ]; do
 		--debug) _debug=y ;;
 		--network) _network=y ;;
 		--x11 | -X) _x11=y ;;
+		--wayland) _wayland=y ;;
 		--need-devfs) _need_devfs=y ;;
 		--need-dns) _need_dns=y ;;
 		--need-procfs) _need_procfs=y ;;
@@ -143,6 +148,11 @@ if [ "$_x11" ]; then
 		_need_path_ro+=" $s"
 	done
 	_need_path_ro+=" /etc/fonts"
+fi
+
+if [ "$_wayland" ]; then
+    _need_env_vars+=" XDG_RUNTIME_DIR"
+    _need_path_rw+=" $XDG_RUNTIME_DIR/${WAYLAND_DISPLAY:-wayland-0}"
 fi
 
 # mounts
