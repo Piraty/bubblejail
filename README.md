@@ -45,6 +45,9 @@ OPTIONS
 		Add network features. Currently equivalent with: --need-dns
 		--need-netns --need-nss
 
+	--wayland
+		Make Wayland work
+
 	--x11
 		Make X11 work
 
