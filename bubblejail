@@ -78,6 +78,7 @@ fi
 
 : "${HOME:="/home/$(id -un)"}"
 : "${XAUTHORITY:="$HOME/.Xauthority"}"
+: "${XDG_RUNTIME_DIR:="/run/user/$(id -u)/"}"
 
 _debug=
 _network=
