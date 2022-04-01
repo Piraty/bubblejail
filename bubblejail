@@ -1,7 +1,7 @@
 #!/bin/bash
 # bubblejail - https://github.com/Piraty/bubblejail
 
-__version__=0.3.0
+__version__=0.4.0
 
 usage() {
 	app="$(basename "$0")"
