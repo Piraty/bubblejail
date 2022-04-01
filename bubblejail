@@ -1,4 +1,5 @@
 #!/bin/bash
+# bubblejail - https://github.com/Piraty/bubblejail
 
 __version__=0.3.0
 
