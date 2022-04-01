@@ -42,8 +42,8 @@ OPTIONS
   High-level options:
 
 	--network
-		Add network features. Currently equivalent with: --need-dns
-		--need-netns --need-nss
+		Add network features. Currently equivalent with: --need-dns --need-netns
+		--need-nss
 
 	--wayland
 		Make Wayland work
@@ -70,8 +70,8 @@ ENVIRONMENT
   bubblejail respects the following environment variables
 
 	BUBBLEJAIL_ENV_WHITELIST
-		white-space separated list of variable names which
-		are passed to the container
+		white-space separated list of variable names which are passed to the
+		container
 
 EXAMPLES
 	bubblejail --x11 --uid 2222 sh -c 'id -u && xeyes'
