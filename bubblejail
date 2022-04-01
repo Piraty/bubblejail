@@ -205,6 +205,11 @@ for var in $BUBBLEJAIL_ENV_WHITELIST $_need_env_vars; do
 	_bwrap_feature_args+=" --setenv $var $val"
 done
 
+# debian fixes
+if [ -d /etc/alternatives ]; then
+	_need_path_ro+=" /etc/alternatives"
+fi
+
 [ -n "$_debug" ] && set -x
 
 #shellcheck disable=SC2086
