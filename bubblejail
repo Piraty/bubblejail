@@ -166,6 +166,11 @@ if [ "$_x11" ]; then
 	_need_path_ro+=" /etc/fonts"
 fi
 
+# debian fixes
+if [ -d /etc/alternatives ]; then
+	_need_path_ro+=" /etc/alternatives"
+fi
+
 # mounts
 if [ "$_need_devfs" ]; then
 	_bwrap_feature_args+=" --dev /dev"
@@ -204,11 +209,6 @@ for var in $BUBBLEJAIL_ENV_WHITELIST $_need_env_vars; do
 	[ -n "$val" ] || continue
 	_bwrap_feature_args+=" --setenv $var $val"
 done
-
-# debian fixes
-if [ -d /etc/alternatives ]; then
-	_need_path_ro+=" /etc/alternatives"
-fi
 
 [ -n "$_debug" ] && set -x
 
