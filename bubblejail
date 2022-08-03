@@ -4,9 +4,8 @@
 __version__=0.4.0
 
 usage() {
-	app="$(basename "$0")"
-	cat <<USAGE
-$app [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in container
+	cat <<'USAGE'
+bubblejail [OPTIONS] [BWRAP_OPTIONS] COMMAND [ARGS] - run command in container
 
 DESCRIPTION
 	Run COMMAND [ARGS] in a sandbox by using the bubblewrap container setup
@@ -59,15 +58,15 @@ OPTIONS
 	--need-netns         Retain the network namespace
 
 ENVIRONMENT
-  $app respects the following environment variables
+  bubblejail respects the following environment variables
 
 	BUBBLEJAIL_ENV_WHITELIST
 		white-space separated list of variable names which are passed to the
 		container
 
 EXAMPLES
-	$app --x11 --uid 2222 sh -c 'id -u && xeyes'
-	$app --network --ro-bind \$HOME/src /src ls /src
+	bubblejail --x11 --uid 2222 sh -c 'id -u && xeyes'
+	bubblejail --network --ro-bind $HOME/src /src ls /src
 USAGE
 }
 
