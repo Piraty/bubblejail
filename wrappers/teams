@@ -1,18 +1,29 @@
 #!/bin/sh
 
-#FIXME: can't join calls, probably needs dbus/pulseaudio magic
+set -e
 
 mkdir -p "$HOME/Downloads/teams"
 
+: "${XDG_CONFIG_HOME:="$HOME/.config/"}"
+
+# these are the default flags, as per upstream's crappy wrapper script
+# IMPORTANT: these are necessary to make incoming screenshare work, reasons are
+# not clear to me yet
+teams_flags="--disable-namespace-sandbox --disable-setuid-sandbox"
+
 #shellcheck disable=SC2086
 exec bubblejail \
+	--debug \
+	--network \
+	--pulseaudio \
 	--x11 \
 	--need-devfs \
 	--need-procfs \
-	--share-net \
+	--share-ipc \
 	--need-env-vars "HOME TZ" \
-	--rw "$HOME/Downloads/teams" \
-	--rw "$HOME/.config/Microsoft/" \
-	"--ro-bind-try /etc/localtime /etc/localtime" \
+	--rw "$XDG_CONFIG_HOME/Microsoft" \
+	--rw "$XDG_CONFIG_HOME/teams" \
 	$BUBBLEJAIL_WRAPPER_TEAMS_EXTRA_ARGS \
-	${BUBBLEJAIL_WRAPPER_TEAMS_CMD:-teams} "$@"
+	--bind-try "$HOME/Downloads/teams" "$HOME/Downloads/" \
+	--ro-bind-try /etc/localtime /etc/localtime \
+	"${BUBBLEJAIL_WRAPPER_TEAMS_CMD:-/usr/share/teams/teams}" $teams_flags "$@"
