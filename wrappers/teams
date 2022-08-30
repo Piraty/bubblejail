@@ -21,6 +21,7 @@ exec bubblejail \
 	--need-procfs \
 	--share-ipc \
 	--need-env-vars "HOME TZ" \
+	--ro /etc/ssl/certs \
 	--rw "$XDG_CONFIG_HOME/Microsoft" \
 	--rw "$XDG_CONFIG_HOME/teams" \
 	$BUBBLEJAIL_WRAPPER_TEAMS_EXTRA_ARGS \
