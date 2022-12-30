@@ -36,6 +36,9 @@ OPTIONS
 	--pulseaudio
 		Make pulseaudio work
 
+	--tor
+		Torify the container (requires torsocks)
+
 	--wayland
 		Make Wayland work
 
@@ -99,6 +102,7 @@ fi
 _debug=
 _network=
 _pulseaudio=
+_tor=
 _wayland=
 _x11=
 
@@ -127,6 +131,7 @@ while [ "$#" -gt 0 ]; do
 		--debug) _debug=y ;;
 		--network) _network=y ;;
 		--pulseaudio) _pulseaudio=y ;;
+		--tor) _tor=y ;;
 		--wayland) _wayland=y ;;
 		--x11 | -X) _x11=y ;;
 		--need-devfs) _need_devfs=y ;;
@@ -173,6 +178,11 @@ if [ "$_pulseaudio" ]; then
 	_pulse_socket="$XDG_RUNTIME_DIR/pulse/native"
 	[ -S "$_pulse_socket" ] && _need_path_rw+=" $_pulse_socket"
 	_need_env_vars+=" XDG_RUNTIME_DIR"
+fi
+if [ "$_tor" ]; then
+	_bwrap_feature_args+=" --ro-bind-try /etc/tor/torsocks.conf /etc/tor/torsocks.conf"
+	_bwrap_feature_args+=" --dev-bind-try /dev/null /dev/null"
+	set -- torsocks "$@"
 fi
 if [ "$_wayland" ]; then
 	_need_env_vars+=" XDG_RUNTIME_DIR"
