@@ -48,6 +48,9 @@ OPTIONS
 	--pulseaudio
 		Make pulseaudio work
 
+	--tor
+		Torify the container (requires torsocks)
+
 	--wayland
 		Make Wayland work
 
