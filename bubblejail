@@ -265,6 +265,7 @@ exec env -i bwrap \
 	--symlink /tmp var/tmp \
 	--dir "$HOME" \
 	--chdir "$HOME" \
+	--new-session \
 	--as-pid-1 \
 	--die-with-parent \
 	--setenv PATH /usr/bin \
