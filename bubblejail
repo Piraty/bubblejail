@@ -27,6 +27,9 @@ OPTIONS
 	--debug
 		Show bwrap command line
 
+	--rootfs <dir>
+		Use this rootfs instead of /
+
   High-level options:
 
 	--alsa
@@ -106,6 +109,7 @@ _debug=
 _alsa=
 _network=
 _pulseaudio=
+_rootfs=
 _tor=
 _wayland=
 _x11=
@@ -137,6 +141,10 @@ while [ "$#" -gt 0 ]; do
 		--alsa) _alsa=y ;;
 		--network) _network=y ;;
 		--pulseaudio) _pulseaudio=y ;;
+		--rootfs)
+			_rootfs="$2"
+			shift
+			;;
 		--tor) _tor=y ;;
 		--wayland) _wayland=y ;;
 		--x11 | -X) _x11=y ;;
@@ -173,6 +181,11 @@ while [ "$#" -gt 0 ]; do
 
 	shift
 done
+
+if [ "$_rootfs" ]; then
+	[ -d "$_rootfs" ] || exit 1
+	: # FIXME: prefix relevant mount operations with this rootfs
+fi
 
 # high-level options
 if [ "$_alsa" ]; then
@@ -292,7 +305,7 @@ done
 
 #shellcheck disable=SC2086
 exec env -i bwrap \
-	--ro-bind /usr /usr \
+	--ro-bind ${_rootfs}/usr /usr \
 	--symlink usr/lib /lib \
 	--symlink usr/lib64 /lib64 \
 	--symlink usr/bin /bin \

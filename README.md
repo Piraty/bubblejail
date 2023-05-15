@@ -39,6 +39,9 @@ OPTIONS
 	--debug
 		Show bwrap command line
 
+	--rootdir <dir>
+		Use this rootdir instead of /.
+
   High-level options:
 
 	--alsa
